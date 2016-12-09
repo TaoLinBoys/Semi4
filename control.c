@@ -64,7 +64,17 @@ int main(int argc , char ** argv){
 
 void printStory(){
   int fd = open("story", O_RDONLY);
+  
   int fsize = lseek(fd, 0, SEEK_END);
   lseek(fd, 0, SEEK_SET);
-  read(fd, stdout, fsize);
+  //printf("size of file: %d\n", fsize);
+
+
+  char storyS[fsize];
+  int rd = read(fd, storyS, fsize); 
+  //printf("rd: %d\n", rd);
+  
+  printf("%s", storyS); //PRINTS OUT THE END OF FILE????
+
+  close(fd);
 }
