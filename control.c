@@ -14,7 +14,6 @@
 int main(int argc , char ** argv){
   int semid, shmid;
   int key = ftok("control.c", 512);
-  int semC;
   int * address;
   int size;
   int fd;
@@ -30,20 +29,20 @@ int main(int argc , char ** argv){
     //semaphore
     semid = semget(key, 1, IPC_CREAT | IPC_EXCL | 0644);
     su.val = 1;
-    semC = semctl(semid, 0, SETVAL, su);
+    semctl(semid, 0, SETVAL, su);
 
     //shared memory
     shmid = shmget(key, 1024, IPC_CREAT | IPC_EXCL | 0644);
+    
+    fd = open("story", O_CREAT | O_TRUNC | O_EXCL, 0644);
+    
     address = (int *) shmat(shmid, 0, 0);
     address = 0;
 
-    printf("Creating: \n");
+    close(fd);
+
     printf("semaphore created: %d\n", semid);
     printf("shared memory created: %d\n", shmid);
-
-    //file
-    fd = open("story", O_CREAT | O_TRUNC | O_EXCL, 0644);
-    close(fd);
     
   }else if (strncmp(argv[1], "-r", strlen(argv[1])) == 0){
 
@@ -54,7 +53,7 @@ int main(int argc , char ** argv){
     printf("Removing the semaphore and shared memory\n");
     //semaphore
     semid = semget(key, 1, 0);
-    semC = semctl(semid, 0, IPC_RMID);
+    semctl(semid, 0, IPC_RMID);
 
     //shared memory
     shmid = shmget(key, 1024, 0);
@@ -63,6 +62,7 @@ int main(int argc , char ** argv){
   }else if (strncmp(argv[1], "-v", strlen(argv[1])) == 0){
 
     //output story
+    printf("printing the story:\n");
     printStory();
     
   }
